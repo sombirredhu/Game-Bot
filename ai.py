@@ -4,30 +4,33 @@ import platform
 import numpy as np
 from time import sleep
 from PIL import ImageGrab
-from game_control import *
+from game_control import get_key, press, release, click
 from predict import predict
-from game_control import *
-from keras.models import model_from_json
+from tensorflow.python.keras.models import model_from_json
 
 def main():
     # Get Model:
-    model_file = open('Data/Model/model.json', 'r')
-    model = model_file.read()
-    model_file.close()
+    with open('Data/Model/model.json', 'r') as model_file:
+        model = model_file.read()
     model = model_from_json(model)
     model.load_weights("Data/Model/weights.h5")
 
     print('AI start now!')
 
-    while 1:
+    while True:
         # Get screenshot:
-        screen = ImageGrab.grab()
+        try:
+            screen = ImageGrab.grab()
+        except Exception as e:
+            print(f"Error capturing screen: {e}")
+            continue
+
         # Image to numpy array:
         screen = np.array(screen)
         # 4 channel(PNG) to 3 channel(JPG)
         Y = predict(model, screen)
-        if Y == [0,0,0,0]:
-            # Not action
+        if Y == [0, 0, 0, 0]:
+            # No action
             continue
         elif Y[0] == -1 and Y[1] == -1:
             # Only keyboard action.

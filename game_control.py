@@ -25,7 +25,9 @@ def scroll(x, y):
     return
 
 def click(x, y):
+    mouse.position = (x, y)  # Move the mouse to the specified position.
     mouse.press(Button.left)
+    mouse.release(Button.left)  # Fixed: Release the left mouse button.
     return
 
 # Keyboard:
